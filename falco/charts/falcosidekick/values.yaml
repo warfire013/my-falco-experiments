@@ -470,11 +470,11 @@ config:
 
   webhook:
     # -- Webhook address, if not empty, Webhook output is *enabled*
-    address: ""
+    address: "http://argo-workflows-server.argo-workflows.svc.cluster.local:2746/api/v1/webhooks/falco"
     # -- HTTP method: POST or PUT
     method: "POST"
     # -- a list of comma separated custom headers to add, syntax is "key:value\,key:value"
-    customHeaders: ""
+    customHeaders: "Content-Type: application/json"
     # -- minimum priority of event to use this output, order is `emergency\|alert\|critical\|error\|warning\|notice\|informational\|debug or ""`
     minimumpriority: ""
     # -- if true, checkcert flag will be ignored (server cert will always be checked)
