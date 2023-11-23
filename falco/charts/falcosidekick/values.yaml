@@ -1007,9 +1007,9 @@ testConnection:
 
 webui:
   # -- enable Falcosidekick-UI
-  enabled: true
+  enabled: false
   # -- number of running pods
-  replicaCount: 2
+  replicaCount: 1
   # -- number of old history to retain to allow rollback (If not set, default Kubernetes value is set to 10)
   # revisionHistoryLimit: 1
   # -- Log level ("debug", "info", "warning", "error")
