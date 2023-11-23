@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # -- number of running pods
-replicaCount: 2
+replicaCount: 1
 
 # -- number of old history to retain to allow rollback (If not set, default Kubernetes value is set to 10)
 # revisionHistoryLimit: 1
@@ -170,7 +170,7 @@ config:
     mutualtls: false
     # -- check if ssl certificate of the output is valid
     checkcert: true
-    
+
   slack:
     # -- Slack Webhook URL (ex: <https://hooks.slack.com/services/XXXX/YYYY/ZZZZ>), if not `empty`, Slack output is *enabled*
     webhookurl: ""
@@ -1007,7 +1007,7 @@ testConnection:
 
 webui:
   # -- enable Falcosidekick-UI
-  enabled: false
+  enabled: true
   # -- number of running pods
   replicaCount: 1
   # -- number of old history to retain to allow rollback (If not set, default Kubernetes value is set to 10)
