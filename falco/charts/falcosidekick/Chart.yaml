@@ -1,7 +1,7 @@
 apiVersion: v1
 appVersion: 2.28.0
 description: Connect Falco to your ecosystem
-home: https://github.com/falcosecurity/falcosidekick
+home: https://github.com/warfire013/my-falco-experiments/tree/main/falco/charts/falcosidekick
 icon: https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png
 keywords:
 - monitoring
@@ -12,5 +12,5 @@ maintainers:
   name: Issif
 name: falcosidekick
 sources:
-- https://github.com/falcosecurity/falcosidekick
+- https://github.com/warfire013/my-falco-experiments/tree/main/falco/charts/falcosidekick
 version: 0.7.7
