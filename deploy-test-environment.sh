@@ -51,7 +51,7 @@ helm install argocd argo/argo-cd -n argo --create-namespace
 
 # Install Argo Workflows using Helm
 echo "Installing Argo Workflows..."
-helm install argo-workflows argo/argo-workflows -n argo-workflows --create-namespace
+helm install argo-workflows argo/argo-workflows -n argo
 
 # Start the ArgoCD API server
 echo "Starting ArgoCD API server..."
