@@ -3,7 +3,7 @@ appVersion: 0.36.2
 dependencies:
 - condition: falcosidekick.enabled
   name: falcosidekick
-  repository: https://falcosecurity.github.io/charts
+  repository: https://github.com/warfire013/my-falco-experiments/tree/main/falco/charts
   version: 0.7.7
 description: Falco
 home: https://falco.org

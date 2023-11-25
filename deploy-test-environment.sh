@@ -5,7 +5,7 @@ cleanup() {
     echo "Cleaning up resources..."
     limactl stop falco-k8s
     limactl delete falco-k8s
-    echo "Cleanup completed.Revert to your original kubeconfig by closing the current shell session or by running 'unset KUBECONFIG'."
+    echo "Cleanup completed. Revert to your original kubeconfig by closing the current shell session or by running 'unset KUBECONFIG'."
 }
 
 # Function to set up Lima kubeconfig
@@ -17,21 +17,32 @@ setup_kubeconfig() {
     chmod 0600 $KUBECONFIG
     echo "Kubeconfig for Lima is set up. Run 'export KUBECONFIG=\$KUBECONFIG' in your shell to use it."
 }
-
-# Check if the first argument is 'cleanup'
+# Check if the first argument is 'cleanup' and execute cleanup if true
 if [ "$1" == "cleanup" ]; then
     cleanup
     exit 0
 fi
 
-# Stop script on any error
-set -e
+# Function to check if ArgoCD is ready
+wait_for_argocd() {
+    echo "Waiting for ArgoCD to be ready..."
+    end=$((SECONDS+120))
+    while [ $SECONDS -lt $end ]; do
+        if kubectl get pods -n argo -l app.kubernetes.io/name=argocd-server -o jsonpath="{.items[0].status.phase}" | grep -q Running; then
+            echo "ArgoCD is ready."
+            return 0
+        fi
+        echo "Waiting for ArgoCD server to start..."
+        sleep 10
+    done
+    echo "ArgoCD did not become ready in time. Triggering cleanup."
+    cleanup
+    exit 1
+}
 
-# Prompt for GitHub repository details
-read -p "Enter your GitHub repository URL: " git_repo_url
-read -p "Enter your GitHub username: " git_username
-read -sp "Enter your GitHub password: " git_password
-echo
+# Error handling: Exit immediately if a command exits with a non-zero status.
+set -e
+trap cleanup ERR
 
 # Install necessary tools
 echo "Installing lima, helm, and argocd..."
@@ -42,20 +53,19 @@ echo "Deploying Kubernetes cluster with Lima..."
 limactl start --name=falco-k8s template://k8s --tty=false
 setup_kubeconfig
 
-
 # Install ArgoCD using Helm
 echo "Installing ArgoCD..."
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
 helm install argocd argo/argo-cd -n argo --create-namespace
-
-# Install Argo Workflows using Helm
-echo "Installing Argo Workflows..."
-helm install argo-workflows argo/argo-workflows -n argo
+kubectl create ns falco
+# Wait for ArgoCD to be ready
+wait_for_argocd
 
 # Start the ArgoCD API server
 echo "Starting ArgoCD API server..."
-kubectl port-forward svc/argocd-server -n argo 8080:443 &
+kubectl port-forward svc/argocd-server -n argo 8080:443 > /dev/null 2>&1 &
+PORT_FORWARD_PID=$!
 
 # Change ArgoCD admin password
 echo "Changing ArgoCD admin password..."
@@ -70,33 +80,19 @@ argocd account update-password --current-password "$initial_password" --new-pass
 echo "Creating a sample ArgoCD app..."
 argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default
 
-# Download the Falco chart
-echo "Downloading Falco Helm chart..."
-helm repo add falcosecurity https://falcosecurity.github.io/charts
-helm pull falcosecurity/falco --untar
-
-# Modify Falco values.yaml for eBPF and enable Falco Sidekick
-echo "Modifying Falco values.yaml..."
-sed -i '' 's/driver:\n  kind: module/driver:\n  kind: ebpf/' falco/values.yaml
-sed -i '' 's/falcosidekick:\n  enabled: false/falcosidekick:\n  enabled: true/' falco/values.yaml
-
-# Commit changes to GitHub
-echo "Committing changes to GitHub..."
-git add falco/values.yaml
-git commit -m "Update Falco configuration"
-git push
-
 # Add the repo to ArgoCD
 echo "Adding repo to ArgoCD..."
-argocd repo add "$git_repo_url" --username "$git_username" --password "$git_password"
+argocd repo add "https://github.com/warfire013/my-falco-experiments.git"
 
 # Deploy Falco as an ArgoCD app
 echo "Deploying Falco as an ArgoCD app..."
 argocd app create falco \
-  --repo "$git_repo_url" \
+  --repo "https://github.com/warfire013/my-falco-experiments.git" \
   --path falco \
   --dest-namespace falco \
   --dest-server https://kubernetes.default.svc \
   --sync-policy automated
 
 echo "Deployment completed successfully."
+argocd app sync guestbook
+argocd app sync falco
