@@ -23,6 +23,10 @@ This project sets up a Kubernetes lab environment on a MacOS system using Lima, 
 2. Helm: Package manager for Kubernetes [Helm Documentation](https://helm.sh/docs/)
 3. ArgoCD CLI: Command-line tool for ArgoCD [ArgoCD CLI Documentation](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 4. Kubectl: Command-line tool for Kubernetes [Kubectl Documentation](https://kubernetes.io/docs/reference/kubectl/)
+5. Falco Event Generator:
+`
+kubectl exec -i -t -n falco falco-event-generator -- event-generator run
+`
 
 ## Deployment
 

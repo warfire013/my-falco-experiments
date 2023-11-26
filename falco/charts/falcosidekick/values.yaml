@@ -158,18 +158,13 @@ config:
     notlspaths: "/ping"
 
   webhook:
-    # -- Webhook address, if not empty, Webhook output is *enabled*
-    address: "http://argo-workflows-server.argo-workflows.svc.cluster.local:2746/api/v1/webhooks/falco"
-    # -- HTTP method: POST or PUT
+    address: "http://webhook-server.default.svc.cluster.local:5000/webhook"
     method: "POST"
-    # -- a list of comma separated custom headers to add, syntax is "key:value\,key:value"
     customHeaders: "Content-Type: application/json"
-    # -- minimum priority of event to use this output, order is `emergency\|alert\|critical\|error\|warning\|notice\|informational\|debug or ""`
     minimumpriority: ""
-    # -- if true, checkcert flag will be ignored (server cert will always be checked)
     mutualtls: false
-    # -- check if ssl certificate of the output is valid
     checkcert: true
+
 
   slack:
     # -- Slack Webhook URL (ex: <https://hooks.slack.com/services/XXXX/YYYY/ZZZZ>), if not `empty`, Slack output is *enabled*

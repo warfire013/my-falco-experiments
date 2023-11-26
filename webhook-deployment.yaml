@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhook-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webhook-server
+  template:
+    metadata:
+      labels:
+        app: webhook-server
+    spec:
+      containers:
+      - name: webhook-server
+        image: python:3.9-slim
+        volumeMounts:
+        - name: webhook-script-volume
+          mountPath: /usr/src/app
+        ports:
+        - containerPort: 5000
+        command: ["/bin/sh", "-c"]
+        args: ["pip install -r /usr/src/app/requirements.txt && python /usr/src/app/custom-webhook.py"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+        - name: WEBHOOK_SECRET
+          value: "your-secret-token"
+        - name: ARGO_WORKFLOW_API
+          value: "http://argo-workflows-server.argo.svc.cluster.local:2746/api/v1/workflows/argo"
+        - name: IS_DEV_ENVIRONMENT
+          value: "false"
+      volumes:
+      - name: webhook-script-volume
+        configMap:
+          name: webhook-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-server
+spec:
+  type: ClusterIP
+  selector:
+    app: webhook-server
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

@@ -45,8 +45,8 @@ set -e
 trap cleanup ERR
 
 # Install necessary tools
-echo "Installing lima, helm, and argocd..."
-brew install lima helm argocd
+echo "Installing lima, helm, argocd and argo workflow cli..."
+brew install lima helm argo argocd
 
 # Deploy Kubernetes cluster using lima
 echo "Deploying Kubernetes cluster with Lima..."
@@ -75,6 +75,14 @@ argocd login localhost:8080 --username admin --password "$initial_password" --in
 read -sp "Enter new password for ArgoCD 'admin' account: " new_password
 echo
 argocd account update-password --current-password "$initial_password" --new-password "$new_password"
+argocd login localhost:8080 --password "$new_password"
+
+# Deploying Argo workflows
+echo "Deploying Argo Workflows..."
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+helm install argo-workflows argo/argo-workflows --namespace argo
+echo "Argo Workflows deployment initiated."
 
 # Create a sample ArgoCD app
 echo "Creating a sample ArgoCD app..."
@@ -93,6 +101,15 @@ argocd app create falco \
   --dest-server https://kubernetes.default.svc \
   --sync-policy automated
 
-echo "Deployment completed successfully."
+
 argocd app sync guestbook
+sleep 30
 argocd app sync falco
+echo "Falco app deployed"
+
+echo "Deploying Falco Event Generator"
+kubectl run falco-event-generator --namespace=falco --image=falcosecurity/event-generator --restart=Never --command -- sleep 100000
+
+echo "Deploying Custom ArgoCD Workflow"
+kubectl create -f custom-workflow.yaml
+echo "Deployment completed successfully."

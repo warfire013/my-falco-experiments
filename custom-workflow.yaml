@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: falco-alert-response-
+spec:
+  entrypoint: respond-to-alert
+  arguments:
+    parameters:
+    - name: pod-name
+      value: "default-pod"  # A default value, will be overridden by actual alert data
+
+  templates:
+  - name: respond-to-alert
+    inputs:
+      parameters:
+      - name: pod-name
+    steps:
+    - - name: check-severity
+        template: delete-pod
+        arguments:
+          parameters:
+          - name: pod-name
+            value: "{{inputs.parameters.pod-name}}"
+
+  - name: delete-pod
+    inputs:
+      parameters:
+      - name: pod-name
+    container:
+      image: bitnami/kubectl:latest
+      command: [sh, -c]
+      args: ["kubectl delete pod {{inputs.parameters.pod-name}}"]
