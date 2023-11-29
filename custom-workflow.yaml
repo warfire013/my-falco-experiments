@@ -3,6 +3,7 @@ kind: Workflow
 metadata:
   generateName: falco-alert-response-
 spec:
+  serviceAccountName: pod-deleter
   entrypoint: respond-to-alert
   arguments:
     parameters:

@@ -75,7 +75,7 @@ argocd login localhost:8080 --username admin --password "$initial_password" --in
 read -sp "Enter new password for ArgoCD 'admin' account: " new_password
 echo
 argocd account update-password --current-password "$initial_password" --new-password "$new_password"
-argocd login localhost:8080 --password "$new_password"
+argocd login localhost:8080 --password "$new_password" --username admin
 
 # Deploying Argo workflows
 echo "Deploying Argo Workflows..."
@@ -110,6 +110,13 @@ echo "Falco app deployed"
 echo "Deploying Falco Event Generator"
 kubectl run falco-event-generator --namespace=falco --image=falcosecurity/event-generator --restart=Never --command -- sleep 100000
 
+echo "Deploying custom webhook"
+kubectl create configmap webhook-script --from-file=template-webhook.py --from-file=requirements.txt
+kubectl apply -f webhook-deployment.yaml
+
 echo "Deploying Custom ArgoCD Workflow"
+kubectl create -f custom-rbac.yaml
 kubectl create -f custom-workflow.yaml
 echo "Deployment completed successfully."
+echo "Argo Server External IP"
+kubectl --namespace argo get services -o wide | grep argo-workflows-server

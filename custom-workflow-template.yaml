@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: falco-alert-response-template
+spec:
+  serviceAccountName: pod-deleter
+  templates:
+  - name: respond-to-alert
+    inputs:
+      parameters:
+      - name: pod-name
+        value: "default-pod"  # This default value is a placeholder.
+    steps:
+    - - name: validate-pod
+        template: check-pod-existence
+        arguments:
+          parameters:
+          - name: pod-name
+            value: "{{inputs.parameters.pod-name}}"
+    - - name: delete-pod
+        template: delete-pod-if-validated
+        arguments:
+          parameters:
+          - name: pod-name
+            value: "{{inputs.parameters.pod-name}}"
+        when: "{{steps.validate-pod.outputs.result}} == true"
+
+  - name: check-pod-existence
+    inputs:
+      parameters:
+      - name: pod-name
+    script:
+      image: bitnami/kubectl:latest
+      command: [sh]
+      source: |
+        if kubectl get pod "{{inputs.parameters.pod-name}}"; then
+          echo true > /tmp/results.txt
+        else
+          echo false > /tmp/results.txt
+        fi
+    outputs:
+      parameters:
+      - name: result
+        valueFrom:
+          path: /tmp/results.txt
+
+  - name: delete-pod-if-validated
+    inputs:
+      parameters:
+      - name: pod-name
+    container:
+      image: bitnami/kubectl:latest
+      command: [sh, -c]
+      args: ["kubectl delete pod {{inputs.parameters.pod-name}}"]

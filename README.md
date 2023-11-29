@@ -68,3 +68,8 @@ This will stop and delete the Lima VM and revert the Kubernetes context to the o
 [ArgoCD Getting Started](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 [Argo Workflows](https://github.com/argoproj/argo-workflows/blob/master/docs/quick-start.md)
 [Falco Sidekick Response Engine](https://falco.org/blog/falcosidekick-response-engine-part-5-argo/)
+
+Run Falco Event Generator
+'
+kubectl exec -it falco-event-generator -n falco -- event-generator run syscall --loop
+'

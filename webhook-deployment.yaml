@@ -12,6 +12,7 @@ spec:
       labels:
         app: webhook-server
     spec:
+      serviceAccountName: pod-deleter
       containers:
       - name: webhook-server
         image: python:3.9-slim
@@ -21,7 +22,7 @@ spec:
         ports:
         - containerPort: 5000
         command: ["/bin/sh", "-c"]
-        args: ["pip install -r /usr/src/app/requirements.txt && python /usr/src/app/custom-webhook.py"]
+        args: ["pip install -r /usr/src/app/requirements.txt && python /usr/src/app/template-webhook.py"]
         resources:
           limits:
             memory: "128Mi"
