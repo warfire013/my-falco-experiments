@@ -85,8 +85,8 @@ helm install argo-workflows argo/argo-workflows --namespace argo
 echo "Argo Workflows deployment initiated."
 
 # Create a sample ArgoCD app
-echo "Creating a sample ArgoCD app..."
-argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default
+# echo "Creating a sample ArgoCD app..."
+# argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default
 
 # Add the repo to ArgoCD
 echo "Adding repo to ArgoCD..."
