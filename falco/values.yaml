@@ -177,7 +177,7 @@ mounts:
 driver:
   # -- Set it to false if you want to deploy Falco without the drivers.
   # Always set it to false when using Falco with plugins.
-  enabled: true
+  enabled: false
   # -- Tell Falco which driver to use. Available options: module (kernel driver), ebpf (eBPF probe), modern-bpf (modern eBPF probe).
   kind: modern_bpf
   # -- Configuration section for ebpf driver.
