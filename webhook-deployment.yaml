@@ -12,7 +12,7 @@ spec:
       labels:
         app: webhook-server
     spec:
-      serviceAccountName: pod-deleter
+      #serviceAccountName: pod-deleter
       containers:
       - name: webhook-server
         image: python:3.9-slim

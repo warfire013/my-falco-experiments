@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
   name: falco-alert-response-template
+  namespace: argo
 spec:
   serviceAccountName: pod-deleter
   templates:

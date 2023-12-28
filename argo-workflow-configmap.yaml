@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  config: |
+    nodeEvents:
+      enabled: true
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: argo-workflows
+    meta.helm.sh/release-namespace: argo
+  creationTimestamp: "2023-12-01T10:58:41Z"
+  labels:
+    app.kubernetes.io/component: workflow-controller
+    app.kubernetes.io/instance: argo-workflows
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: argo-workflows-cm
+    app.kubernetes.io/part-of: argo-workflows
+    helm.sh/chart: argo-workflows-0.39.5
+  name: workflow-controller-configmap
+  namespace: argo

@@ -86,7 +86,7 @@ echo "Argo Workflows deployment initiated."
 
 # Create a sample ArgoCD app
 echo "Creating a sample ArgoCD app..."
-argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default
+# argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default
 
 # Add the repo to ArgoCD
 echo "Adding repo to ArgoCD..."
@@ -114,9 +114,17 @@ echo "Deploying custom webhook"
 kubectl create configmap webhook-script --from-file=template-webhook.py --from-file=requirements.txt
 kubectl apply -f webhook-deployment.yaml
 
-echo "Deploying Custom ArgoCD Workflow"
-kubectl create -f custom-rbac.yaml
-kubectl create -f custom-workflow.yaml
-echo "Deployment completed successfully."
-echo "Argo Server External IP"
+# echo "Deploying Custom ArgoCD Workflow"
+#kubectl create -f custom-rbac.yaml --namespace argo
+#kubectl create -f custom-workflow-template.yaml 
+#echo "Deployment completed successfully."
+#echo "Argo Server External IP"
 kubectl --namespace argo get services -o wide | grep argo-workflows-server
+
+kubectl get workfloweventbindings.argoproj.io
+kubectl get workfloweventbindings.argoproj.io -n argo
+kubectl get workflowartifactgctasks.argoproj.io -n argo
+kubectl get workflows.argoproj.io -n argo
+kubectl get workflowtaskresults.argoproj.io -n argo
+kubectl get workflowtasksets.argoproj.io -n argo
+kubectl get workflowtemplates.argoproj.io -n argo

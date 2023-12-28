@@ -73,3 +73,5 @@ Run Falco Event Generator
 '
 kubectl exec -it falco-event-generator -n falco -- event-generator run syscall --loop
 '
+
+export KUBECONFIG="/Users/saurabh.malpure/.lima/falco-k8s/copied-from-guest/kubeconfig.yaml"
