@@ -3,20 +3,22 @@
 # Function to perform cleanup actions
 cleanup() {
     echo "Cleaning up resources..."
-    limactl stop falco-k8s
-    limactl delete falco-k8s
+    colima stop
+    colima delete -y
     echo "Cleanup completed. Revert to your original kubeconfig by closing the current shell session or by running 'unset KUBECONFIG'."
 }
 
-# Function to set up Lima kubeconfig
-setup_kubeconfig() {
-    echo "Setting up separate kubeconfig for Lima..."
-    mkdir -p "${HOME}/.lima/falco-k8s/conf"
-    export KUBECONFIG="${HOME}/.lima/falco-k8s/conf/kubeconfig.yaml"
-    limactl shell falco-k8s sudo cat /etc/kubernetes/admin.conf > $KUBECONFIG
-    chmod 0600 $KUBECONFIG
-    echo "Kubeconfig for Lima is set up. Run 'export KUBECONFIG=\$KUBECONFIG' in your shell to use it."
+# Function to install kernel headers in Colima VM
+install_kernel_headers() {
+    echo "Installing Linux kernel headers in Colima VM..."
+    colima ssh << EOF
+    sudo apt-get update
+    sudo apt-get install -y linux-headers-\$(uname -r)
+EOF
+    echo "Kernel headers installed."
 }
+
+
 # Check if the first argument is 'cleanup' and execute cleanup if true
 if [ "$1" == "cleanup" ]; then
     cleanup
@@ -45,13 +47,15 @@ set -e
 trap cleanup ERR
 
 # Install necessary tools
-echo "Installing lima, helm, argocd and argo workflow cli..."
-brew install lima helm argo argocd
+echo "Installing colima, helm, argocd and argo workflow cli..."
+brew install colima helm argo argocd
 
-# Deploy Kubernetes cluster using lima
-echo "Deploying Kubernetes cluster with Lima..."
-limactl start --name=falco-k8s template://k8s --tty=false
-setup_kubeconfig
+# Deploy Kubernetes cluster using Colima
+echo "Deploying Kubernetes cluster with CoLima..."
+colima start --cpu 4 --memory 8 --disk 40 --kubernetes
+
+# Install kernel headers in Colima VM
+install_kernel_headers
 
 # Install ArgoCD using Helm
 echo "Installing ArgoCD..."
@@ -121,10 +125,10 @@ kubectl apply -f webhook-deployment.yaml
 #echo "Argo Server External IP"
 kubectl --namespace argo get services -o wide | grep argo-workflows-server
 
-kubectl get workfloweventbindings.argoproj.io
-kubectl get workfloweventbindings.argoproj.io -n argo
-kubectl get workflowartifactgctasks.argoproj.io -n argo
-kubectl get workflows.argoproj.io -n argo
-kubectl get workflowtaskresults.argoproj.io -n argo
-kubectl get workflowtasksets.argoproj.io -n argo
-kubectl get workflowtemplates.argoproj.io -n argo
+#kubectl get workfloweventbindings.argoproj.io
+#kubectl get workfloweventbindings.argoproj.io -n argo
+#kubectl get workflowartifactgctasks.argoproj.io -n argo
+#kubectl get workflows.argoproj.io -n argo
+#kubectl get workflowtaskresults.argoproj.io -n argo
+#kubectl get workflowtasksets.argoproj.io -n argo
+#kubectl get workflowtemplates.argoproj.io -n argo
