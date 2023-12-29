@@ -4,7 +4,7 @@
 cleanup() {
     echo "Cleaning up resources..."
     colima stop
-    colima delete -y
+    colima delete 
     echo "Cleanup completed. Revert to your original kubeconfig by closing the current shell session or by running 'unset KUBECONFIG'."
 }
 
@@ -52,7 +52,7 @@ brew install colima helm argo argocd
 
 # Deploy Kubernetes cluster using Colima
 echo "Deploying Kubernetes cluster with CoLima..."
-colima start --cpu 4 --memory 8 --disk 40 --kubernetes
+colima start --runtime containerd --cpu 4 --memory 8 --disk 40 --kubernetes --dns "8.8.8.8"
 
 # Install kernel headers in Colima VM
 install_kernel_headers
@@ -81,6 +81,10 @@ echo
 argocd account update-password --current-password "$initial_password" --new-password "$new_password"
 argocd login localhost:8080 --password "$new_password" --username admin
 
+# Add the repo to ArgoCD
+echo "Adding repo to ArgoCD..."
+argocd repo add "https://github.com/warfire013/my-falco-experiments.git"
+
 # Deploying Argo workflows
 echo "Deploying Argo Workflows..."
 helm repo add argo https://argoproj.github.io/argo-helm
@@ -91,10 +95,6 @@ echo "Argo Workflows deployment initiated."
 # Create a sample ArgoCD app
 echo "Creating a sample ArgoCD app..."
 argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default
-
-# Add the repo to ArgoCD
-echo "Adding repo to ArgoCD..."
-argocd repo add "https://github.com/warfire013/my-falco-experiments.git"
 
 # Deploy Falco as an ArgoCD app
 echo "Deploying Falco as an ArgoCD app..."
