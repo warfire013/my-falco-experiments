@@ -1097,7 +1097,7 @@ falco:
   # todo: syscall_counters_enabled option
   metrics:
     enabled: true
-    interval: 1h
+    interval: 1m
     output_rule: true
     # output_file: /tmp/falco_stats.jsonl
     resource_utilization_enabled: true
