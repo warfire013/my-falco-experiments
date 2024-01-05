@@ -750,7 +750,7 @@ falco:
   # output events in memory until they are consumed by a gRPC client. Ensure that
   # you have a consumer for the output events or leave it disabled.
   grpc_output:
-    enabled: false
+    enabled: true
 
   ##########################
   # Falco exposed services #
@@ -791,11 +791,18 @@ falco:
 
   # -- gRPC server using a local unix socket
   grpc:
-    enabled: false
-    bind_address: "unix:///run/falco/falco.sock"
+    enabled: true
+    bind_address: "0.0.0.0:5060"
     # -- When the `threadiness` value is set to 0, Falco will automatically determine
     # the appropriate number of threads based on the number of online cores in the system.
     threadiness: 0
+    private_key: "/etc/falco/certs/server.key"
+    cert_chain: "/etc/falco/certs/server.crt"
+    root_certs: "/etc/falco/certs/ca.crt"
+  extraSecretMounts:
+  - name: falco-certs
+    mountPath: /etc/falco/certs
+    secretName: falco-certs
 
   # [Stable] `webserver`
   #
