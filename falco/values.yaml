@@ -309,7 +309,7 @@ extra:
 # or use existing secret containing key, crt, ca as well as pem bundle
 certs:
   # -- Existing secret containing the following key, crt and ca as well as the bundle pem.
-  existingSecret: "falco-certs"
+  existingSecret: ""
   server:
     # -- Key used by gRPC and webserver.
     key: ""
@@ -755,7 +755,7 @@ falco:
   # output events in memory until they are consumed by a gRPC client. Ensure that
   # you have a consumer for the output events or leave it disabled.
   grpc_output:
-    enabled: true
+    enabled: false
 
   ##########################
   # Falco exposed services #
@@ -796,7 +796,7 @@ falco:
 
   # -- gRPC server using a local unix socket
   grpc:
-    enabled: true
+    enabled: false
     bind_address: "0.0.0.0:5060"
     # -- When the `threadiness` value is set to 0, Falco will automatically determine
     # the appropriate number of threads based on the number of online cores in the system.
