@@ -167,11 +167,9 @@ services:
 # File access configuration (scenario requirement)
 mounts:
   # -- A list of volumes you want to add to the Falco pods.
-  volumes: 
-    - []
+  volumes: []
   # -- A list of volumes you want to add to the Falco pods.
-  volumeMounts: 
-    - []
+  volumeMounts: []
   # -- By default, `/proc` from the host is only mounted into the Falco pod when `driver.enabled` is set to `true`. This flag allows it to override this behaviour for edge cases where `/proc` is needed but syscall data source is not enabled at the same time (e.g. for specific plugins).
   enforceProcMount: false
 
