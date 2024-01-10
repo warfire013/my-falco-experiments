@@ -54,10 +54,7 @@ serviceMonitor:
   enabled: true
   # -- specify Additional labels to be added on the Service Monitor.
   additionalLabels: 
-    hostname: "{{ .Values.hostname }}"
-    falco_version: "{{ .Values.falco.version }}"
-    priority: "{{ .Values.priority }}"
-    kernel_release: "{{ .Values.falco.kernel_release }}"
+    app.kubernetes.io/name: "falcosidekick"
   # -- specify a user defined interval. When not specified Prometheus default interval is used.
   interval: ""
   # -- specify a user defined scrape timeout. When not specified Prometheus default scrape timeout is used.
