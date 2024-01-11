@@ -56,7 +56,7 @@ serviceMonitor:
   additionalLabels: 
     app.kubernetes.io/name: "falcosidekick"
   # -- specify a user defined interval. When not specified Prometheus default interval is used.
-  interval: ""
+  interval: "1m"
   # -- specify a user defined scrape timeout. When not specified Prometheus default scrape timeout is used.
   scrapeTimeout: ""
 

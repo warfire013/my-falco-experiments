@@ -4,7 +4,8 @@
 cleanup() {
     echo "Cleaning up resources..."
     colima stop
-    colima delete 
+    colima delete
+    colima prune 
     echo "Cleanup completed. Revert to your original kubeconfig by closing the current shell session or by running 'unset KUBECONFIG'."
 }
 
@@ -122,14 +123,16 @@ echo "Deploying Prometheus..."
 kubectl create ns monitoring
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
-helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
+helm install prometheus prometheus-community/prometheus --namespace monitoring
 
 # Deploy Grafana
 echo "Deploying Grafana..."
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
 helm install grafana grafana/grafana --namespace monitoring
 
 # Updating Prometheus config to scrape Falco metrics
-k apply -f prometheus-configmap.yaml -n monitoring
+kubectl apply -f prometheus-configmap.yaml -n monitoring
 
 # echo "Deploying Custom ArgoCD Workflow"
 #kubectl create -f custom-rbac.yaml --namespace argo
@@ -140,11 +143,11 @@ kubectl --namespace argo get services -o wide | grep argo-workflows-server
 
 echo "Exposing monitoring tools..."
 kubectl port-forward svc/prometheus-server 9090:80 -n monitoring > /dev/null 2>&1 &
-PROMETHEUS_PORT_FORWARD_PID=$!
+sleep 2  # Wait for 2 seconds
 echo "Access prometheus from your browser: http:localhost:9090"
 
-kubectl port-forward service/grafana 3000:80 -n monitoring > /dev/null 2>&1 &
-GRAFANA_PORT_FORWARD_PID=$!
+kubectl port-forward svc/grafana 3000:80 -n monitoring > /dev/null 2>&1 &
+sleep 2  # Wait for 2 seconds
 echo "Access grafana from your browser: http:localhost:3000"
 
 # Print out Grafana admin password
@@ -152,3 +155,4 @@ echo "Grafana Admin Password:"
 kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
 echo "Login to grafana dashboard using the above password. Please refer the README.md docs for sample queries."
+echo "If any of the web-ui does not work, refer the port-forward commands in README.md or commands above in the script."

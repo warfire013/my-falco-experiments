@@ -348,7 +348,6 @@ metadata:
   annotations:
     meta.helm.sh/release-name: prometheus
     meta.helm.sh/release-namespace: monitoring
-  creationTimestamp: "2024-01-10T09:33:33Z"
   labels:
     app.kubernetes.io/component: server
     app.kubernetes.io/instance: prometheus
@@ -359,5 +358,3 @@ metadata:
     helm.sh/chart: prometheus-25.8.2
   name: prometheus-server
   namespace: monitoring
-  resourceVersion: "17003"
-  uid: 8ad8c8f4-47ca-417e-90c2-371d9b4745c8

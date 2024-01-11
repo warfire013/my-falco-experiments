@@ -46,8 +46,8 @@ sh deploy-test-environment.sh
 To access the ArgoCD, Prometheus and Grafana dashboards, port-forwarding commands are already executed in the script:
 `
 kubectl port-forward svc/argocd-server -n argo 8080:443
-kubectl port-forward svc/prometheus-server -n monitoring 9090:9090
-kubectl port-forward service/grafana -n monitoring 3000:80
+kubectl port-forward svc/prometheus-server 9090:80 -n monitoring 
+kubectl port-forward service/grafana 3000:80 -n monitoring
 `
 To access the UI, just go to the local browser and access the UI:
 - ArgoCD: http://localhost:8080/
@@ -60,7 +60,7 @@ Since Grafana and Prometheus do not have a CLI interface, Promethus needs to be 
 2. Add Prometheus as Data Source:
    - In the Grafana dashboard, go to Configuration (gear icon) > Data Sources.
    - Click Add data source, and select Prometheus.
-   - In the HTTP section, set the URL to http://prometheus-server.monitoring.svc.cluster.local:9090.
+   - In the HTTP section, set the URL to http://prometheus-server.monitoring.svc.cluster.local.
    - Click Save & Test to ensure Grafana can connect to Prometheus.
 
 **Cleanup**
