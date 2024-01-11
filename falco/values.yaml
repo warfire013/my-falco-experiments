@@ -792,10 +792,13 @@ falco:
   # -- gRPC server using a local unix socket
   grpc:
     enabled: false
-    bind_address: "unix:///run/falco/falco.sock"
+    bind_address: "0.0.0.0:5060"
     # -- When the `threadiness` value is set to 0, Falco will automatically determine
     # the appropriate number of threads based on the number of online cores in the system.
     threadiness: 0
+    private_key: "/etc/falco/certs/server.key"
+    cert_chain: "/etc/falco/certs/server.crt"
+    root_certs: "/etc/falco/certs/ca.crt"
 
   # [Stable] `webserver`
   #
@@ -1096,8 +1099,8 @@ falco:
   # todo: prometheus export option
   # todo: syscall_counters_enabled option
   metrics:
-    enabled: false
-    interval: 1h
+    enabled: true
+    interval: 1m
     output_rule: true
     # output_file: /tmp/falco_stats.jsonl
     resource_utilization_enabled: true
