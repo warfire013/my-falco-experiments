@@ -63,6 +63,19 @@ Since Grafana and Prometheus do not have a CLI interface, Promethus needs to be 
    - In the HTTP section, set the URL to http://prometheus-server.monitoring.svc.cluster.local.
    - Click Save & Test to ensure Grafana can connect to Prometheus.
 
+## Sample Prometheus and Grafana queries
+1. For CPU usage of the Falco pods, use the following query:
+   `
+   sum(rate(container_cpu_usage_seconds_total{namespace="falco"}[1m])) by (pod)
+   `
+   This query shows the rate of CPU usage by Falco pods in the namespace "falco" over the last minute.
+2. For memory usage of the Falco pods, use this query:
+   `
+   sum(container_memory_usage_bytes{namespace="falco"}) by (pod)
+   `
+   This query shows the current memory usage of Falco pods.
+
+
 **Cleanup**
 To clean up and remove the deployed resources, use the cleanup argument with the script:
 `
