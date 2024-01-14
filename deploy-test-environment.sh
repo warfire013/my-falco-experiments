@@ -129,7 +129,7 @@ helm install prometheus prometheus-community/prometheus --namespace monitoring
 echo "Deploying Grafana..."
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
-helm install grafana grafana/grafana --namespace monitoring
+helm install loki grafana/loki-stack --namespace monitoring --set grafana.enabled=true,promtail.enabled=true,loki.persistence.enabled=true,loki.persistence.size=10Gi
 
 # Updating Prometheus config to scrape Falco metrics
 kubectl apply -f prometheus-configmap.yaml -n monitoring
@@ -146,13 +146,13 @@ kubectl port-forward svc/prometheus-server 9090:80 -n monitoring > /dev/null 2>&
 sleep 2  # Wait for 2 seconds
 echo "Access prometheus from your browser: http:localhost:9090"
 
-kubectl port-forward svc/grafana 3000:80 -n monitoring > /dev/null 2>&1 &
+kubectl port-forward svc/loki-grafana 3000:80 -n monitoring > /dev/null 2>&1 &
 sleep 2  # Wait for 2 seconds
 echo "Access grafana from your browser: http:localhost:3000"
 
 # Print out Grafana admin password
 echo "Grafana Admin Password:"
-kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+kubectl get secret --namespace monitoring loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
 echo "Login to grafana dashboard using the above password. Please refer the README.md docs for sample queries."
 echo "If any of the web-ui does not work, refer the port-forward commands in README.md or commands above in the script."
