@@ -60,7 +60,7 @@ Since Grafana and Prometheus do not have a CLI interface, Promethus needs to be 
 2. Add Prometheus as Data Source:
    - In the Grafana dashboard, go to Configuration (gear icon) > Data Sources.
    - Click Add data source, and select Prometheus.
-   - In the HTTP section, set the URL to http://prometheus-server.monitoring.svc.cluster.local.
+   - In the HTTP section, set the URL to http://prometheus-server.monitoring.svc.cluster.local
    - Click Save & Test to ensure Grafana can connect to Prometheus.
 
 ## Sample Prometheus and Grafana queries
