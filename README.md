@@ -20,7 +20,7 @@ This project sets up a Kubernetes lab environment on a MacOS system using Colima
 
 ## Tools Installed
 
-1. Lima: Lightweight VMs for MacOS [Lima](https://lima-vm.io/)
+1. Colima: Lightweight VMs for MacOS [CoLima](https://github.com/abiosoft/colima)
 2. Helm: Package manager for Kubernetes [Helm Documentation](https://helm.sh/docs/)
 3. ArgoCD CLI: Command-line tool for ArgoCD [ArgoCD CLI Documentation](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 4. Kubectl: Command-line tool for Kubernetes [Kubectl Documentation](https://kubernetes.io/docs/reference/kubectl/)
