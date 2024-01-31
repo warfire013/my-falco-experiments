@@ -119,40 +119,41 @@ echo "Deploying custom webhook"
 kubectl create configmap webhook-script --from-file=template-webhook.py --from-file=requirements.txt
 kubectl apply -f webhook-deployment.yaml
 
-echo "Deploying Prometheus..."
+
+# echo "Deploying Custom ArgoCD Workflow"
+# kubectl create -f custom-rbac.yaml --namespace argo
+# kubectl create -f custom-workflow-template.yaml 
+# echo "Deployment completed successfully."
+# echo "Argo Server External IP"
+# kubectl --namespace argo get services -o wide | grep argo-workflows-server
+
+# Add Grafana Helm repository
 kubectl create ns monitoring
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
-helm install prometheus prometheus-community/prometheus --namespace monitoring
+echo "Grafana repository added."
+
+# Deploy Loki
+echo "Deploying Loki..."
+helm install loki grafana/loki --namespace monitoring --values loki-config/values.yaml
+
+# Deploy Promtail
+echo "Deploying Promtail..."
+helm install promtail grafana/promtail --namespace monitoring --set "loki.serviceName=loki"
 
 # Deploy Grafana
 echo "Deploying Grafana..."
-helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
-helm install loki grafana/loki-stack --namespace monitoring --set grafana.enabled=true,promtail.enabled=true,loki.persistence.enabled=true,loki.persistence.size=10Gi
+helm install grafana grafana/grafana --namespace monitoring
 
-# Updating Prometheus config to scrape Falco metrics
-kubectl apply -f prometheus-configmap.yaml -n monitoring
+# Retrieve Grafana admin password
+echo "Retrieving Grafana admin password..."
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
-# echo "Deploying Custom ArgoCD Workflow"
-#kubectl create -f custom-rbac.yaml --namespace argo
-#kubectl create -f custom-workflow-template.yaml 
-#echo "Deployment completed successfully."
-#echo "Argo Server External IP"
-kubectl --namespace argo get services -o wide | grep argo-workflows-server
+# Port-forward Grafana for immediate access
+kubectl port-forward service/grafana 3000:80 -n monitoring > /dev/null 2>&1 &
+PORT_FORWARD_PID=$!
+echo "Access Grafana at http://localhost:3000"
+echo "Use the above password to log in to Grafana."
 
-echo "Exposing monitoring tools..."
-kubectl port-forward svc/prometheus-server 9090:80 -n monitoring > /dev/null 2>&1 &
-sleep 2  # Wait for 2 seconds
-echo "Access prometheus from your browser: http:localhost:9090"
-
-kubectl port-forward svc/loki-grafana 3000:80 -n monitoring > /dev/null 2>&1 &
-sleep 2  # Wait for 2 seconds
-echo "Access grafana from your browser: http:localhost:3000"
-
-# Print out Grafana admin password
-echo "Grafana Admin Password:"
-kubectl get secret --namespace monitoring loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-
-echo "Login to grafana dashboard using the above password. Please refer the README.md docs for sample queries."
+echo "Deployment complete. Check the services for readiness and visit Grafana for log visualization."
 echo "If any of the web-ui does not work, refer the port-forward commands in README.md or commands above in the script."
